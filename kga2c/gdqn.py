@@ -39,7 +39,7 @@ class KGA2CTrainer(object):
         self.init_envs(params['task_num'])
 
         self.model = KGA2C(params, self.templates, self.max_word_length, len(self.vocab_kge),
-                           self.vocab_act, self.vocab_act_rev, len(self.sp), gat=self.params['gat']).cuda()
+                           self.vocab_act, self.vocab_act_rev, len(self.sp), gat=self.params['gat']).cpu()
         self.batch_size = params['batch_size']
         if params['preload_weights']:
             self.model = torch.load(self.params['preload_weights'])['model']
@@ -103,7 +103,7 @@ class KGA2CTrainer(object):
                 type_t.update(a['type_ids'])
             tmpl_target.append(cur_t)
             type_targets.append(list(type_t))
-        tmpl_target_tt = torch.FloatTensor(tmpl_target).cuda()
+        tmpl_target_tt = torch.FloatTensor(tmpl_target).cpu()
 
 
         idxs = np.array([i for i in range(len(self.vocab_act))])
@@ -117,7 +117,7 @@ class KGA2CTrainer(object):
             for t in sel_idx:
                 cur_typet[t] = 1
             type_mask_target.append([[cur_typet], [cur_typet]])
-        type_target_tt = torch.FloatTensor(type_mask_target).squeeze(2).cuda()
+        type_target_tt = torch.FloatTensor(type_mask_target).squeeze(2).cpu()
         return tmpl_target_tt, type_target_tt
 
 
@@ -156,7 +156,7 @@ class KGA2CTrainer(object):
                 for s in selected:
                     mask[s] = 1
             mask_all.append(mask)
-        return torch.BoolTensor(mask_all).cuda().detach()
+        return torch.BoolTensor(mask_all).cpu(.detach()
 
 
     def discount_reward(self, transitions, last_values):
@@ -225,8 +225,8 @@ class KGA2CTrainer(object):
                     print(f"Last 10% episodes average score: {last_10_score}")
 
 
-            rew_tt = torch.FloatTensor(rewards).cuda().unsqueeze(1)
-            done_mask_tt = (~torch.tensor(dones)).float().cuda().unsqueeze(1)
+            rew_tt = torch.FloatTensor(rewards).cpu(.unsqueeze(1)
+            done_mask_tt = (~torch.tensor(dones)).float().cpu(.unsqueeze(1)
             self.model.reset_hidden(done_mask_tt)
 
             transitions.append((tmpl_pred_tt, obj_pred_tt, value, rew_tt,
@@ -336,8 +336,8 @@ class KGA2CTrainer(object):
                         return
 
 
-            rew_tt = torch.FloatTensor(rewards).cuda().unsqueeze(1)
-            done_mask_tt = (~torch.tensor(dones)).float().cuda().unsqueeze(1)
+            rew_tt = torch.FloatTensor(rewards).cpu(.unsqueeze(1)
+            done_mask_tt = (~torch.tensor(dones)).float().cpu(.unsqueeze(1)
             self.model.reset_hidden(done_mask_tt)
             transitions.append((tmpl_pred_tt, obj_pred_tt, value, rew_tt,
                                 done_mask_tt, tmpl_gt_tt, dec_tmpl_tt,
@@ -383,11 +383,11 @@ class KGA2CTrainer(object):
                     o2_mask[d] = 1
                 elif st == 1:
                     o1_mask[d] = 1
-            o1_mask = torch.FloatTensor(o1_mask).cuda()
-            o2_mask = torch.FloatTensor(o2_mask).cuda()
+            o1_mask = torch.FloatTensor(o1_mask).cpu()
+            o2_mask = torch.FloatTensor(o2_mask).cpu()
 
             # Policy Gradient Loss
-            policy_obj_loss = torch.FloatTensor([0]).cuda()
+            policy_obj_loss = torch.FloatTensor([0]).cpu()
             cnt = 0
             for i in range(self.batch_size):
                 if dec_steps[i] >= 1:

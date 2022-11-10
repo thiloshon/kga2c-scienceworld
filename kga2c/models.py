@@ -35,7 +35,7 @@ class ObjectDecoder(nn.Module):
     def forward(self, input, input_hidden, vocab, vocab_rev, decode_steps_t, graphs, type_to_obj_str_luts):
         all_outputs, all_words = [], []
 
-        decoder_input = torch.tensor([vocab_rev['<s>']] * input.size(0)).cuda()
+        decoder_input = torch.tensor([vocab_rev['<s>']] * input.size(0)).cpu()
         decoder_hidden = input_hidden.unsqueeze(0)
         torch.set_printoptions(profile="full")
 
@@ -56,7 +56,7 @@ class ObjectDecoder(nn.Module):
                 cur_obj = masks[i][cur_obj_idx]
                 cur_objs.append(cur_obj)
 
-            decoder_input = torch.LongTensor(cur_objs).cuda()
+            decoder_input = torch.LongTensor(cur_objs).cpu()
             all_words.append(decoder_input)
             all_outputs.append(ret_decoder_output)
 
@@ -147,7 +147,7 @@ class KGA2C(nn.Module):
             cur_st.extend([int(c) for c in '{0:09b}'.format(abs(int(scr)))])
             src_t.append(cur_st)
 
-        src_t = torch.FloatTensor(src_t).cuda()
+        src_t = torch.FloatTensor(src_t).cpu()
 
         if not self.gat:
             state_emb = torch.cat((o_t, src_t), dim=1)
@@ -170,9 +170,9 @@ class KGA2C(nn.Module):
             templ_enc_input.append(templ)
             decode_steps.append(decode_step)
 
-        _, decoder_o_hidden_init0, _ = self.template_enc.forward(torch.tensor(templ_enc_input).cuda().clone())
+        _, decoder_o_hidden_init0, _ = self.template_enc.forward(torch.tensor(templ_enc_input).cpu(.clone())
 
-        decoder_o_output, decoded_o_words = self.decoder_object.forward(decoder_o_hidden_init0.cuda(), decoder_t_hidden.squeeze(0).cuda(), self.vocab, self.vocab_rev, decode_steps, graphs, type_to_obj_str_luts)
+        decoder_o_output, decoded_o_words = self.decoder_object.forward(decoder_o_hidden_init0.cpu(), decoder_t_hidden.squeeze(0).cpu(), self.vocab, self.vocab_rev, decode_steps, graphs, type_to_obj_str_luts)
 
         return decoder_t_output, decoder_o_output, decoded_o_words, topi, value, decode_steps#decoder_t_output#template_mask
 
@@ -212,7 +212,7 @@ class StateNetwork(nn.Module):
         out = []
         for g in graph_rep:
             _, adj = g
-            adj = torch.IntTensor(adj).cuda()
+            adj = torch.IntTensor(adj).cpu()
             x = self.gat.forward(self.state_ent_emb.weight, adj).view(-1)
             out.append(x.unsqueeze(0))
         out = torch.cat(out)
@@ -282,11 +282,11 @@ class ActionDrQA(nn.Module):
         :type obs: np.ndarray of shape (Batch_Size x 4 x 300)
 
         '''
-        x_l, h_l = self.enc_look(torch.LongTensor(obs[:,0,:]).cuda(), self.h_look)
-        x_i, h_i = self.enc_inv(torch.LongTensor(obs[:,1,:]).cuda(), self.h_inv)
-        x_o, h_o = self.enc_ob(torch.LongTensor(obs[:,2,:]).cuda(), self.h_ob)
-        x_p, h_p = self.enc_preva(torch.LongTensor(obs[:,3,:]).cuda(), self.h_preva)
-        x_t, h_t = self.enc_task(torch.LongTensor(obs[:,4,:]).cuda(), self.h_task)
+        x_l, h_l = self.enc_look(torch.LongTensor(obs[:,0,:]).cpu(), self.h_look)
+        x_i, h_i = self.enc_inv(torch.LongTensor(obs[:,1,:]).cpu(), self.h_inv)
+        x_o, h_o = self.enc_ob(torch.LongTensor(obs[:,2,:]).cpu(), self.h_ob)
+        x_p, h_p = self.enc_preva(torch.LongTensor(obs[:,3,:]).cpu(), self.h_preva)
+        x_t, h_t = self.enc_task(torch.LongTensor(obs[:,4,:]).cpu(), self.h_task)
 
         if self.recurrent:
             self.h_look = h_l
