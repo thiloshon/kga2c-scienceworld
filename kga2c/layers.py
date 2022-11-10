@@ -21,7 +21,7 @@ class EncoderRNN(nn.Module):
         return output, hidden
 
     def initHidden(self, batch_size):
-        return torch.zeros(1, batch_size, self.hidden_size).gpu()
+        return torch.zeros(1, batch_size, self.hidden_size).cpu()
 
 
 class PackedEncoderRNN(nn.Module):
@@ -51,7 +51,7 @@ class PackedEncoderRNN(nn.Module):
         return output, hidden
 
     def initHidden(self, batch_size):
-        return torch.zeros(1, batch_size, self.hidden_size).gpu()
+        return torch.zeros(1, batch_size, self.hidden_size).cpu()
 
 
 class DecoderRNN(nn.Module):
@@ -70,7 +70,7 @@ class DecoderRNN(nn.Module):
         return output, hidden
 
     def initHidden(self, batch):
-        return torch.zeros(1, batch, self.hidden_size).gpu()
+        return torch.zeros(1, batch, self.hidden_size).cpu()
 
 
 class UnregDropout(nn.Module):
@@ -84,7 +84,7 @@ class UnregDropout(nn.Module):
     def forward(self, X):
         if self.training:
             binomial = torch.distributions.binomial.Binomial(probs=1-self.p)
-            sample = binomial.sample(X.size()).gpu()
+            sample = binomial.sample(X.size()).cpu()
             return X * sample
         return X
 
@@ -232,7 +232,7 @@ class EncoderLSTM(nn.Module):
             batch_size,
             self.hidden_size
         ), requires_grad=False)
-        return h0.gpu(), c0.gpu()
+        return h0.cpu(), c0.cpu()
 
     def forward(self, inputs, lengths=0):
         embeds = self.embedding(inputs)   # (batch, seq_len, embedding_size)
