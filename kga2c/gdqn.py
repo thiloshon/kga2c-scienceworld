@@ -156,7 +156,7 @@ class KGA2CTrainer(object):
                 for s in selected:
                     mask[s] = 1
             mask_all.append(mask)
-        return torch.BoolTensor(mask_all).cpu(.detach()
+        return torch.BoolTensor(mask_all).cpu().detach()
 
 
     def discount_reward(self, transitions, last_values):
@@ -225,8 +225,8 @@ class KGA2CTrainer(object):
                     print(f"Last 10% episodes average score: {last_10_score}")
 
 
-            rew_tt = torch.FloatTensor(rewards).cpu(.unsqueeze(1)
-            done_mask_tt = (~torch.tensor(dones)).float().cpu(.unsqueeze(1)
+            rew_tt = torch.FloatTensor(rewards).cpu().unsqueeze(1)
+            done_mask_tt = (~torch.tensor(dones)).float().cpu().unsqueeze(1)
             self.model.reset_hidden(done_mask_tt)
 
             transitions.append((tmpl_pred_tt, obj_pred_tt, value, rew_tt,
@@ -336,8 +336,8 @@ class KGA2CTrainer(object):
                         return
 
 
-            rew_tt = torch.FloatTensor(rewards).cpu(.unsqueeze(1)
-            done_mask_tt = (~torch.tensor(dones)).float().cpu(.unsqueeze(1)
+            rew_tt = torch.FloatTensor(rewards).cpu().unsqueeze(1)
+            done_mask_tt = (~torch.tensor(dones)).float().cpu().unsqueeze(1)
             self.model.reset_hidden(done_mask_tt)
             transitions.append((tmpl_pred_tt, obj_pred_tt, value, rew_tt,
                                 done_mask_tt, tmpl_gt_tt, dec_tmpl_tt,

@@ -170,7 +170,7 @@ class KGA2C(nn.Module):
             templ_enc_input.append(templ)
             decode_steps.append(decode_step)
 
-        _, decoder_o_hidden_init0, _ = self.template_enc.forward(torch.tensor(templ_enc_input).cpu(.clone())
+        _, decoder_o_hidden_init0, _ = self.template_enc.forward(torch.tensor(templ_enc_input).cpu().clone())
 
         decoder_o_output, decoded_o_words = self.decoder_object.forward(decoder_o_hidden_init0.cpu(), decoder_t_hidden.squeeze(0).cpu(), self.vocab, self.vocab_rev, decode_steps, graphs, type_to_obj_str_luts)
 
